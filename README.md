@@ -5,6 +5,7 @@ Reitsuki JavaScript Galgame Framework
 Jquery http://jquery.com/
 kineticjs http://kineticjs.com/
 
+build 下的是已经合并的和minify的Reitsuki.js 可以直接使用
 # 如何开始
 
 ## 初始化游戏对象
