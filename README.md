@@ -114,7 +114,8 @@ gal.start();
 调用.多个参数可以是用冒号分隔.
 如果是想在调用语句里是用变量的话
 > @{ global.text = "hello"; }@
-@log global.text
+
+> @log global.text
 
 ## 在对话中是用变量
 
@@ -142,8 +143,9 @@ gal.start();
 对应文件夹为 bgm,voice,sound
 现在只支持ogg文件格式,未来会更具浏览器的情况自动识别文件格式
 > @setBGM "bgm"
-@setVoice "v01"
-@setSound "sound"
+
+> @setVoice "v01"
+> @setSound "sound"
 
 ## 选择语句(selectBox命令)
 > @selectBox "item1","如果Item1被选择的话就跳去这个label","item2","如果Item2被选择的话就跳去这个label"
