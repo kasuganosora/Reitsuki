@@ -1,0 +1,5 @@
+/**
+ * @author sorakasugano
+ */
+
+var Reitsuki = {};
