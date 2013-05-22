@@ -1,0 +1,68 @@
+<project name="Reitsuki" default="deftaget">
+    <property name="build.dir" value="build"/>
+    <property name="tools.dir" value="/Users/sorakasugano/Dropbox/code/tools"/>
+    <property name="tools.js" value="${tools.dir}/rhino/js.jar"/>
+    <property name="tools.jshint" value="${tools.dir}/jshint.js"/>
+    <property name="hint.options" value="undef=false,forin=false,strict=false,boss=true,newcap=true,eqeqeq=false,evil=true,eqnull=true" />
+    <property name="tools.closure" value="${tools.dir}/compiler.jar" />
+    <tstamp>
+        <format property="build.time"
+                pattern="yyyy-MM-dd HH:mm:ss"  locale="en" />
+    </tstamp>
+
+    <taskdef name="jshint" classname="com.philmander.jshint.JsHintAntTask"
+             classpath="${tools.dir}/ant-jshint.jar" />
+    <target name="deftaget" depends="minify">
+        <mkdir dir="${build.dir}/css"/>
+        <mkdir dir="${build.dir}/img"/>
+        <mkdir dir="${build.dir}/bgm"/>
+        <mkdir dir="${build.dir}/bg"/>
+        <mkdir dir="${build.dir}/config"/>
+        <mkdir dir="${build.dir}/character"/>
+        <mkdir dir="${build.dir}/video"/>
+    </target>
+    <target name="concatenate" depends="validate">
+        <echo>Concat Files</echo>
+      <concat destfile="${build.dir}/Reitsuki.js" fixlastline="yes" eol="lf" outputencoding="utf-8" encoding="utf-8">
+          <filelist files="ReitsukiNameSpace.js" />
+          <filelist dir="include" files="reitsuki.tools.js,MesssageCenter.js,ComponentBase.js" />
+          <fileset dir="include" includes="*.js" excludes="reitsuki.tools.js,MesssageCenter.js,ComponentBase.js,ScriptExecutor.js" />
+          <filelist files="Reitsuki.js" />
+          <filelist dir="include" files="ScriptExecutor.js" />
+
+          <header>/* Build Time: ${build.time}  */</header>
+      </concat>
+   </target>
+
+   <target name="validate">
+       <jshint dir="" options="${hint.options}">
+            <include name="ReitsukiNameSpace.js"/>
+           <include name="Reitsuki.js"/>
+           <report type="xml" destFile="jshint/results.xml" />
+       </jshint>
+       <jshint dir="include" options="${hint.options}">
+           <include name="*.js"/>
+           <exclude name="reitsuki.tools.js" />
+           <report type="xml" destFile="jshint/results.xml" />
+       </jshint>
+   </target>
+
+    <target name="minify" depends="concatenate" >
+        <delete>
+            <fileset dir="${build.dir}" includes="*-min.js"/>
+        </delete>
+        <apply executable="java" failonerror="true">
+            <fileset dir="${build.dir}" includes="*.js" />
+            <mapper type="glob" from="*.js" to="${build.dir}/*-min.js"/>
+            <arg line="-jar"/>
+            <arg path="${tools.closure}"/>
+            <arg line="--compilation_level WHITESPACE_ONLY" />
+            <arg line="--js"/>
+
+            <srcfile/>
+
+            <arg line="--js_output_file"/>
+            <targetfile/>
+        </apply>
+    </target>
+</project>
