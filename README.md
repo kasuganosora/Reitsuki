@@ -6,6 +6,9 @@ Jquery http://jquery.com/
 kineticjs http://kineticjs.com/
 
 build 下的是已经合并的和minify的Reitsuki.js 可以直接使用
+demo 地址
+http://demo.hcg.im/rei
+
 # 如何开始
 
 ## 初始化游戏对象
