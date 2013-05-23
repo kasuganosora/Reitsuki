@@ -153,6 +153,9 @@ chrome,firefox,opera 是使用ogg文件格式,IE和Safari是使用mp3文件格�
 > @setVoice "v01"
 > @setSound "sound"
 
+## 播放视频 (@video)
+> @video "mp4.m4v","video.webm","video.ogg"
+
 ## 选择语句(selectBox命令)
 > @selectBox "item1","如果Item1被选择的话就跳去这个label","item2","如果Item2被选择的话就跳去这个label"
 
