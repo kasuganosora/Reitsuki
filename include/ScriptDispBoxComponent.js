@@ -192,7 +192,11 @@ var ScriptDispBoxComponent = ComponeBase.extend({
             if(this.content.dispIndexInline === 0 && colonIndex >-1){
                 text =  this.content.dispTextArr[this.content.textLine].substr(0,colonIndex);
                 this.content.dispIndexInline = text.length + 1;
-                this._nameBox.setText("【" + text + "】");
+
+                if(text.length !== 0){
+                    this._nameBox.setText("【" + text + "】");
+                }
+
             }else{
                 this._nameBox.setText("");
             }

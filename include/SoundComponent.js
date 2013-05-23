@@ -11,7 +11,11 @@ var SoundComponent =  ComponeBase.extend({
         this.name = soundType.toUpperCase() + "Component";
 
         if(!soundFileType){
-            this.soundFileType = "ogg";
+            if(this.sound.canPlayType('audio/ogg; codecs="vorbis"') === 'probably' ){
+                this.soundFileType = "ogg";
+            }else{
+                this.soundFileType = "mp3";
+            }
         }
 
         this.SoundDir = "";

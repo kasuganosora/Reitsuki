@@ -1,4 +1,4 @@
-/* Build Time: 2013-05-21 20:38:47 */
+/* Build Time: 2013-05-23 16:36:45 */
 /**
  * @author sorakasugano
  */
@@ -966,7 +966,11 @@ var ScriptDispBoxComponent = ComponeBase.extend({
             if(this.content.dispIndexInline === 0 && colonIndex >-1){
                 text =  this.content.dispTextArr[this.content.textLine].substr(0,colonIndex);
                 this.content.dispIndexInline = text.length + 1;
-                this._nameBox.setText("【" + text + "】");
+
+                if(text.length !== 0){
+                    this._nameBox.setText("【" + text + "】");
+                }
+
             }else{
                 this._nameBox.setText("");
             }
@@ -1712,7 +1716,11 @@ var SoundComponent =  ComponeBase.extend({
         this.name = soundType.toUpperCase() + "Component";
 
         if(!soundFileType){
-            this.soundFileType = "ogg";
+            if(this.sound.canPlayType('audio/ogg; codecs="vorbis"') === 'probably' ){
+                this.soundFileType = "ogg";
+            }else{
+                this.soundFileType = "mp3";
+            }
         }
 
         this.SoundDir = "";
@@ -2300,12 +2308,16 @@ Reitsuki.ScriptExecutor.prototype.outputString = function (text){
             }
         }
     }
-   var chResult = this._procCHImage(text);
+   var chResult = this._procCHImageAndVoice(text);
     text = chResult.text;
     var CMDS = [];
     var textComponent = this._outTextLabel + "Component";
     if(chResult.chCMD){
         CMDS.push(chResult.chCMD);
+    }
+
+    if(chResult.voice){
+        CMDS.push(this.scriptManager.createCMD("VoiceComponent","play",{name:chResult.voice}));
     }
     CMDS.push(this.scriptManager.createCMD(textComponent,"setText",{text:text}));
 
@@ -2322,7 +2334,7 @@ Reitsuki.ScriptExecutor.prototype.outputString = function (text){
  * @returns {*}
  * @private
  */
-Reitsuki.ScriptExecutor.prototype._procCHImage = function(text){
+Reitsuki.ScriptExecutor.prototype._procCHImageAndVoice = function(text){
     // 处理脚本中的立绘  ：全角
     // Exp 春日野穹(笑),诗音(高兴),夏川真凉：今天的天气真好
     var colonIndex;
@@ -2334,16 +2346,41 @@ Reitsuki.ScriptExecutor.prototype._procCHImage = function(text){
     var  reg = /(\S+?)\((\S+?)\)/g;
     var character = [];
     var chNams = [];
+    var voice = null;
     for(var i = 0,l = chImageSetting.length; i < l; i++){
         var m = reg.exec(chImageSetting[i]);
         if(m){
            var name = m[1];
-           var imgNum = m[2];
-            character.push({charName:name,charNum:imgNum});
-            chNams.push(m[1]);
+           var value = m[2];
+           var realName = "";
+            if(name.toLowerCase() == "voice"){
+               voice = value;
+            }else{
+                realName = name;
+                if(name.charAt(0) === '-'){
+                    realName =  name.substr(1);
+                }else{
+                    realName = name;
+
+                    //别名
+                    var rIndex = realName.indexOf(":");
+                    if(rIndex > 0){
+                        // 因为不能以:开头  例如  :春日野穹(笑)
+                        var aliases = realName.substr(0,rIndex);
+                        chNams.push(aliases);
+                        realName = realName.substr(rIndex+1);
+                    }else{
+                        chNams.push(realName);
+                    }
+
+                }
+                character.push({charName:realName,charNum:value});
+            }
+
         }else{
             chNams.push(chImageSetting[i]);
         }
+        reg.compile(reg);
     }
 
     text = chNams.join(',') + "：" + text.substr(colonIndex+1);
@@ -2353,6 +2390,7 @@ Reitsuki.ScriptExecutor.prototype._procCHImage = function(text){
     }else{
         result.chCMD = null;
     }
+    result.voice = voice;
     result.text = text;
     return result;
 };
