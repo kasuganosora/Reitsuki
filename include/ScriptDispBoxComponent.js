@@ -164,6 +164,8 @@ var ScriptDispBoxComponent = ComponeBase.extend({
         //收到载入进度消息,直接关闭对话框
         if(this.content.intLoadEvent){
             this.content.intLoadEvent = false;
+            this._nameBox.setText("");
+            this._reDraw();
             return this.COMPLETE_FLAG;
         }
 

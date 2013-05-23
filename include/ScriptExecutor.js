@@ -445,9 +445,9 @@ Reitsuki.ScriptExecutor.prototype.selectBox = function(){
     ]);
 };
 
-Reitsuki.ScriptExecutor.prototype.video = function(mp4Src,oggSrc){
+Reitsuki.ScriptExecutor.prototype.video = function(mp4,webm,ogg){
     this.scriptManager.CMDS.push([
-        this.scriptManager.createCMD("VideoComponent","play",{mp4Src:mp4Src,oggSrc:oggSrc})
+        this.scriptManager.createCMD("VideoComponent","play",{mp4:mp4,webm:webm,ogg:ogg})
     ]);
 };
 
@@ -493,6 +493,9 @@ Reitsuki.ScriptExecutor.prototype.set = function (){
 
 // Reader
 Reitsuki.ScriptExecutor.Reader = function(str){
+    if(str === undefined){
+        str = "";
+    }
     this.data = str;
     this.currPos = 0;
     this.dataLength = str.length;

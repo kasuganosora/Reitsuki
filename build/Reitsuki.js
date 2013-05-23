@@ -1,4 +1,4 @@
-/* Build Time: 2013-05-23 16:36:45 */
+/* Build Time: 2013-05-23 19:42:39 */
 /**
  * @author sorakasugano
  */
@@ -646,6 +646,9 @@ var CHComponent = ComponeBase.extend({
             self.loadedCHImg[charName][charNum] = this;
         };
         imgObj.onerror = function(){
+            if(self.loadedCHImg[charName] === undefined){
+                self.loadedCHImg[charName] = {};
+            }
             self.loadedCHImg[charName][charNum]  = null;
             console.log("Character Image:"+ charName + "("+ charNum +")"+" load fail");
         };
@@ -656,8 +659,8 @@ var CHComponent = ComponeBase.extend({
 
     _queryCHImgFileName:function(charName,charNum){
 
-        if(this.charTable === undefined){
-            throw new Error("need set charTable for CHComponent");
+        if(this.charTable === undefined || this.charTable === null){
+            return this.CHDir + "/" + charNum + "." + this.CHFileType;
         }
 
         if(this.charTable[charName] === undefined || this.charTable[charName][charNum] === undefined){
@@ -938,6 +941,8 @@ var ScriptDispBoxComponent = ComponeBase.extend({
         //收到载入进度消息,直接关闭对话框
         if(this.content.intLoadEvent){
             this.content.intLoadEvent = false;
+            this._nameBox.setText("");
+            this._reDraw();
             return this.COMPLETE_FLAG;
         }
 
@@ -1373,7 +1378,7 @@ var ScriptDispBoxComponent = ComponeBase.extend({
         if(!ele){
             throw new Error("Load script element( "+ id +" ) error, Http Code:" + request.status);
         }
-        this.scriptExecutor.loadScript(ele.innerText);
+        this.scriptExecutor.loadScript(ele.textContent || ele.innerText);
     };
 
     Reitsuki.ScriptManager.prototype.getNextScripts = function(){
@@ -1784,11 +1789,11 @@ var VideoComponent = ComponeBase.extend({
 
     play:function(o){
        var content = this.content;
-       var mp4Src = "video/" + o.mp4Src;
-       var oggSrc = "video/" + o.oggSrc;
+
        if(content.init === undefined){
+
            content.init = true;
-           var video = this._createVideoEle(mp4Src,oggSrc);
+           var video = this._createVideoEle(o.mp4, o.webm, o.ogg);
            var dev = o.dev;
            var devContent = dev.getContent();
           // var x =  devContent.offsetLeft;
@@ -1803,6 +1808,7 @@ var VideoComponent = ComponeBase.extend({
           // video.style.left = x;
            video.style["z-index"] = 200;
            devContent.appendChild(video);
+
            video.load();
            video.play();
            content.video = video;
@@ -1810,7 +1816,7 @@ var VideoComponent = ComponeBase.extend({
            this.messageCenter.broadcast("STOP_SOUND",null);
        }
 
-        if(content.video.ended){
+        if(content.video.ended  || content.error){
             content.video.parentNode.removeChild(content.video);
             return this.COMPLETE_FLAG;
         }
@@ -1826,22 +1832,45 @@ var VideoComponent = ComponeBase.extend({
         }
     },
 
-    _createVideoEle: function(mp4Src,oggSrc){
+    _createVideoEle: function(mp4,webm,ogg){
         var video  = document.createElement("video");
         video.width = this.dev.getWidth();
         video.height = this.dev.getHeight();
-        var mp4Source = document.createElement("source");
-        mp4Source.src = mp4Src;
-        mp4Source.type = "video/mp4";
+        video.id = "xx1";
+        var source;
 
-        var oggSource = document.createElement("source");
-        oggSource.src = oggSrc;
-        mp4Source.type = "video/ogg";
+        var canPlayMP4 = video.canPlayType('video/mp4; codecs="avc1.4D401E, mp4a.40.2"');
+        var canPlayWEBM = video.canPlayType('video/webm; codecs="vp8.0, vorbis"');
+        var canPlayOgg  =  video.canPlayType('video/ogg; codecs="theora, vorbis"');
 
-        video.appendChild(mp4Source);
-        video.appendChild(oggSource);
+        if(canPlayMP4 === "probably" && mp4){
+            source = document.createElement("source");
+            source.src = "video/" + mp4;
+            source.type = "video/mp4";
+            video.appendChild(source);
+        }else if(canPlayWEBM === "probably" && webm){
+            source = document.createElement("source");
+            source.src = "video/" + webm;
+            source.type = "video/webm";
+            video.appendChild(source);
+        }else if(canPlayOgg === "probably" && ogg){
+            source = document.createElement("source");
+            source.src = "video/" + ogg;
+            source.type = "video/ogg";
+            video.appendChild(source);
+        }else{
+            this.content.error = true;
+        }
+
+
+        var self = this;
+        video.onerror = function(){
+            self.content.error = true;
+        };
+
         return video;
     }
+
 
 });
 /**
@@ -2583,9 +2612,9 @@ Reitsuki.ScriptExecutor.prototype.selectBox = function(){
     ]);
 };
 
-Reitsuki.ScriptExecutor.prototype.video = function(mp4Src,oggSrc){
+Reitsuki.ScriptExecutor.prototype.video = function(mp4,webm,ogg){
     this.scriptManager.CMDS.push([
-        this.scriptManager.createCMD("VideoComponent","play",{mp4Src:mp4Src,oggSrc:oggSrc})
+        this.scriptManager.createCMD("VideoComponent","play",{mp4:mp4,webm:webm,ogg:ogg})
     ]);
 };
 
@@ -2631,6 +2660,9 @@ Reitsuki.ScriptExecutor.prototype.set = function (){
 
 // Reader
 Reitsuki.ScriptExecutor.Reader = function(str){
+    if(str === undefined){
+        str = "";
+    }
     this.data = str;
     this.currPos = 0;
     this.dataLength = str.length;

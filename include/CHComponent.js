@@ -190,6 +190,9 @@ var CHComponent = ComponeBase.extend({
             self.loadedCHImg[charName][charNum] = this;
         };
         imgObj.onerror = function(){
+            if(self.loadedCHImg[charName] === undefined){
+                self.loadedCHImg[charName] = {};
+            }
             self.loadedCHImg[charName][charNum]  = null;
             console.log("Character Image:"+ charName + "("+ charNum +")"+" load fail");
         };
@@ -200,8 +203,8 @@ var CHComponent = ComponeBase.extend({
 
     _queryCHImgFileName:function(charName,charNum){
 
-        if(this.charTable === undefined){
-            throw new Error("need set charTable for CHComponent");
+        if(this.charTable === undefined || this.charTable === null){
+            return this.CHDir + "/" + charNum + "." + this.CHFileType;
         }
 
         if(this.charTable[charName] === undefined || this.charTable[charName][charNum] === undefined){

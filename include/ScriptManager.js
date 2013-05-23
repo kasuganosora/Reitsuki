@@ -44,7 +44,7 @@
         if(!ele){
             throw new Error("Load script element( "+ id +" ) error, Http Code:" + request.status);
         }
-        this.scriptExecutor.loadScript(ele.innerText);
+        this.scriptExecutor.loadScript(ele.textContent || ele.innerText);
     };
 
     Reitsuki.ScriptManager.prototype.getNextScripts = function(){
