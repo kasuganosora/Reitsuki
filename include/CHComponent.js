@@ -28,6 +28,7 @@ var CHComponent = ComponeBase.extend({
         });
         this.layer.add(this.chGroup);
         this.dev.add(this.layer);
+
     },
 
     setCharacter:function(o){
@@ -67,9 +68,11 @@ var CHComponent = ComponeBase.extend({
 
     _setCharacters:function(o){
         var charCount =  o.character.length;
+
         var i;
         var character;
         if(this.content.init === undefined){
+
             if(this.content.nowDisplayCount === undefined){
                 this.content.nowDisplayCount = 0;
             }
@@ -212,4 +215,6 @@ var CHComponent = ComponeBase.extend({
         }
         return this.CHDir + "/" + this.charTable[charName][charNum] + "." + this.CHFileType;
     }
+
+
 });

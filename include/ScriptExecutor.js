@@ -183,7 +183,7 @@ Reitsuki.ScriptExecutor.prototype.outputString = function (text){
     }
     CMDS.push(this.scriptManager.createCMD(textComponent,"setText",{text:text}));
 
-    CMDS.push(this.scriptManager.createCMD("CHComponent","clearCharacter",{}));
+   // CMDS.push(this.scriptManager.createCMD("CHComponent","clearCharacter",{}));
     this.scriptManager.CMDS.push(CMDS);
 
 };
@@ -359,7 +359,7 @@ Reitsuki.ScriptExecutor.prototype.stopVoice = function(){
 Reitsuki.ScriptExecutor.prototype.setSound= function(sound){
     this.needSaveData.Sound = {functionName:"setSound",params:this._argToArray(arguments)};
     this.scriptManager.CMDS.push([
-        this.scriptManager.createCMD("VoiceComponent","play",{name:sound})
+        this.scriptManager.createCMD("SoundComponent","play",{name:sound})
     ]);
 };
 
@@ -412,6 +412,20 @@ Reitsuki.ScriptExecutor.prototype.dailog = function(id,callback){
         this.scriptManager.createCMD("DialogComponent","show",{id:id,callback:callback})
     ]);
 };
+Reitsuki.ScriptExecutor.prototype.setCH = function(name,chNum){
+    this.scriptManager.CMDS.push([
+        this.scriptManager.createCMD("CHComponent","setCharacter",{character:{
+            charName:name,
+            charNum:chNum
+        }})
+    ]);
+};
+
+Reitsuki.ScriptExecutor.prototype.clearCH = function(){
+    this.scriptManager.CMDS.push([
+        this.scriptManager.createCMD("CHComponent","clearCharacter",{})
+    ]);
+};
 
 Reitsuki.ScriptExecutor.prototype.selectBox = function(){
    if(arguments.length % 2 !== 0){
@@ -448,6 +462,12 @@ Reitsuki.ScriptExecutor.prototype.selectBox = function(){
 Reitsuki.ScriptExecutor.prototype.video = function(mp4,webm,ogg){
     this.scriptManager.CMDS.push([
         this.scriptManager.createCMD("VideoComponent","play",{mp4:mp4,webm:webm,ogg:ogg})
+    ]);
+};
+
+Reitsuki.ScriptExecutor.prototype.wait = function(time){
+    this.scriptManager.CMDS.push([
+        this.scriptManager.createCMD("SysComponent","wait",{time:time})
     ]);
 };
 

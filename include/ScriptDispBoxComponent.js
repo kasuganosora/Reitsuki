@@ -14,8 +14,8 @@ var ScriptDispBoxComponent = ComponeBase.extend({
         this.layer = o.layer;
 
 
-        this.width = o.width ? o.width : 780;
-        this.height = o.height ? o.height : 120;
+        this.width = o.sbWidth ? o.sbWidth : 780;
+        this.height = o.sbHeight ? o.sbHeight : 120;
         this.x = o.x ? o.x : this.layer.getWidth() / 2 - this.width /2;
         this.y = o.y ? o.y : this.layer.getHeight() - this.height - 10;
 

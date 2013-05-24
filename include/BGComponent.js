@@ -21,10 +21,10 @@ var BGComponent = ComponeBase.extend({
         this.name = "BGComponent"; //组件名称
     },
 
-    _B_setBGDIR:function(o){
+    _B_SET_BGDIR:function(o){
         this.BGDir = o;
     },
-    _B_setBGFileType:function(o){
+    _B_SET_BGFILE_TYPE:function(o){
         this.BGFileType = o;
     },
 

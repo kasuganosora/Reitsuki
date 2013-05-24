@@ -1,4 +1,4 @@
-/* Build Time: 2013-05-23 19:42:39 */
+/* Build Time: 2013-05-24 17:11:42 */
 /**
  * @author sorakasugano
  */
@@ -294,10 +294,10 @@ var BGComponent = ComponeBase.extend({
         this.name = "BGComponent"; //组件名称
     },
 
-    _B_setBGDIR:function(o){
+    _B_SET_BGDIR:function(o){
         this.BGDir = o;
     },
-    _B_setBGFileType:function(o){
+    _B_SET_BGFILE_TYPE:function(o){
         this.BGFileType = o;
     },
 
@@ -484,6 +484,7 @@ var CHComponent = ComponeBase.extend({
         });
         this.layer.add(this.chGroup);
         this.dev.add(this.layer);
+
     },
 
     setCharacter:function(o){
@@ -523,9 +524,11 @@ var CHComponent = ComponeBase.extend({
 
     _setCharacters:function(o){
         var charCount =  o.character.length;
+
         var i;
         var character;
         if(this.content.init === undefined){
+
             if(this.content.nowDisplayCount === undefined){
                 this.content.nowDisplayCount = 0;
             }
@@ -668,6 +671,8 @@ var CHComponent = ComponeBase.extend({
         }
         return this.CHDir + "/" + this.charTable[charName][charNum] + "." + this.CHFileType;
     }
+
+
 });
 /**
  * @author sorakasugano
@@ -791,8 +796,8 @@ var ScriptDispBoxComponent = ComponeBase.extend({
         this.layer = o.layer;
 
 
-        this.width = o.width ? o.width : 780;
-        this.height = o.height ? o.height : 120;
+        this.width = o.sbWidth ? o.sbWidth : 780;
+        this.height = o.sbHeight ? o.sbHeight : 120;
         this.x = o.x ? o.x : this.layer.getWidth() / 2 - this.width /2;
         this.y = o.y ? o.y : this.layer.getHeight() - this.height - 10;
 
@@ -1378,7 +1383,7 @@ var ScriptDispBoxComponent = ComponeBase.extend({
         if(!ele){
             throw new Error("Load script element( "+ id +" ) error, Http Code:" + request.status);
         }
-        this.scriptExecutor.loadScript(ele.textContent || ele.innerText);
+        this.scriptExecutor.loadScript(ele.textContent || ele.innerText );
     };
 
     Reitsuki.ScriptManager.prototype.getNextScripts = function(){
@@ -1781,6 +1786,27 @@ var SoundComponent =  ComponeBase.extend({
  * @author sorakasugano
  */
 
+var SysComponent = ComponeBase.extend({
+    init:function(){
+        this._super(); //初始化基类
+        this.name = "SysComponent"; //组件名称
+    } ,
+    wait:function(o){
+        if(this.content.init === undefined){
+            this.content.init = true;
+            this.content.timestampA = (new Date()).getTime();
+
+        }
+        var pastTime = (new Date()).getTime() - this.content.timestampA;
+        if(pastTime >= o.time){
+            return this.COMPLETE_FLAG;
+        }
+    }
+});
+/**
+ * @author sorakasugano
+ */
+
 var VideoComponent = ComponeBase.extend({
     init:function(){
         this._super();
@@ -1950,12 +1976,21 @@ var VideoComponent = ComponeBase.extend({
         this.dev.add(uiLayer);
 
         var scriptBoxComponent = new ScriptDispBoxComponent({
-            layer:uiLayer
+            layer:uiLayer,
+            textBoxX:parameters.textBoxX,
+            textBoxY:parameters.textBoxY,
+            textBoxWidth: parameters.textBoxWidth,
+            textBoxHeight: parameters.textBoxHeight,
+            sbWidth:parameters.sbWidth,
+            sbHeight:parameters.sbHeight
         });
+
         this._scriptBoxAreaElement =  scriptBoxComponent.buttonAreaEle;
 
         this.messageCenter.registerComponent(scriptBoxComponent);
 
+        var sysComponent = new SysComponent();
+        this.messageCenter.registerComponent(sysComponent);
         //注册脚本管理器
         this.messageCenter.registerscriptManager(this.scriptManager );
 
@@ -2350,7 +2385,7 @@ Reitsuki.ScriptExecutor.prototype.outputString = function (text){
     }
     CMDS.push(this.scriptManager.createCMD(textComponent,"setText",{text:text}));
 
-    CMDS.push(this.scriptManager.createCMD("CHComponent","clearCharacter",{}));
+   // CMDS.push(this.scriptManager.createCMD("CHComponent","clearCharacter",{}));
     this.scriptManager.CMDS.push(CMDS);
 
 };
@@ -2526,7 +2561,7 @@ Reitsuki.ScriptExecutor.prototype.stopVoice = function(){
 Reitsuki.ScriptExecutor.prototype.setSound= function(sound){
     this.needSaveData.Sound = {functionName:"setSound",params:this._argToArray(arguments)};
     this.scriptManager.CMDS.push([
-        this.scriptManager.createCMD("VoiceComponent","play",{name:sound})
+        this.scriptManager.createCMD("SoundComponent","play",{name:sound})
     ]);
 };
 
@@ -2579,6 +2614,20 @@ Reitsuki.ScriptExecutor.prototype.dailog = function(id,callback){
         this.scriptManager.createCMD("DialogComponent","show",{id:id,callback:callback})
     ]);
 };
+Reitsuki.ScriptExecutor.prototype.setCH = function(name,chNum){
+    this.scriptManager.CMDS.push([
+        this.scriptManager.createCMD("CHComponent","setCharacter",{character:{
+            charName:name,
+            charNum:chNum
+        }})
+    ]);
+};
+
+Reitsuki.ScriptExecutor.prototype.clearCH = function(){
+    this.scriptManager.CMDS.push([
+        this.scriptManager.createCMD("CHComponent","clearCharacter",{})
+    ]);
+};
 
 Reitsuki.ScriptExecutor.prototype.selectBox = function(){
    if(arguments.length % 2 !== 0){
@@ -2615,6 +2664,12 @@ Reitsuki.ScriptExecutor.prototype.selectBox = function(){
 Reitsuki.ScriptExecutor.prototype.video = function(mp4,webm,ogg){
     this.scriptManager.CMDS.push([
         this.scriptManager.createCMD("VideoComponent","play",{mp4:mp4,webm:webm,ogg:ogg})
+    ]);
+};
+
+Reitsuki.ScriptExecutor.prototype.wait = function(time){
+    this.scriptManager.CMDS.push([
+        this.scriptManager.createCMD("SysComponent","wait",{time:time})
     ]);
 };
 

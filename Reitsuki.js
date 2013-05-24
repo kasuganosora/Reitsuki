@@ -75,12 +75,21 @@
         this.dev.add(uiLayer);
 
         var scriptBoxComponent = new ScriptDispBoxComponent({
-            layer:uiLayer
+            layer:uiLayer,
+            textBoxX:parameters.textBoxX,
+            textBoxY:parameters.textBoxY,
+            textBoxWidth: parameters.textBoxWidth,
+            textBoxHeight: parameters.textBoxHeight,
+            sbWidth:parameters.sbWidth,
+            sbHeight:parameters.sbHeight
         });
+
         this._scriptBoxAreaElement =  scriptBoxComponent.buttonAreaEle;
 
         this.messageCenter.registerComponent(scriptBoxComponent);
 
+        var sysComponent = new SysComponent();
+        this.messageCenter.registerComponent(sysComponent);
         //注册脚本管理器
         this.messageCenter.registerscriptManager(this.scriptManager );
 
