@@ -242,7 +242,7 @@ Reitsuki.ScriptExecutor.prototype._procCHImageAndVoice = function(text){
         }else{
             chNams.push(chImageSetting[i]);
         }
-        reg.compile(reg);
+        reg.lastIndex = 0;
     }
 
     text = chNams.join(',') + "：" + text.substr(colonIndex+1);

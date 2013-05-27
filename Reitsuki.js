@@ -260,6 +260,23 @@
         subClass.superClass = baseClass.prototype;
     };
 
+    Reitsuki._dispatchEvent = function(ele,eventType,data){
+        if(ele.dispatchEvent){
+            var ev = document.createEvent("HTMLEvents");
+            ev.initEvent(eventType,false,false);
+            ev.data = data;
+            ele.dispatchEvent(ev);
+            return true;
+        } else if(ele.fireEvent){
+            //IE
+            var e = document.createEventObject();
+            e.data = data;
+            ele.fireEvent(eventType, e);
+            return true;
+        }
+        return false;
+    };
+
     Reitsuki._trim = function(text){return text.replace(/^\s+|\s+$/g, '');};
 
 
@@ -297,5 +314,7 @@
     Reitsuki.localStorage.remove = function(key){
         window.localStorage.removeItem( Reitsuki.localStorage.prefix + key );
     };
+
+
 })(Reitsuki);
 

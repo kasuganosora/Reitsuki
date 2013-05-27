@@ -1,4 +1,4 @@
-/* Build Time: 2013-05-24 17:11:42 */
+/* Build Time: 2013-05-27 23:17:03 */
 /**
  * @author sorakasugano
  */
@@ -705,6 +705,7 @@ var DialogComponent = ComponeBase.extend({
 
             content.init = true;
             content.dialog = document.getElementById(id);
+
             this.messageCenter.broadcast("HIDESCRIPTBOX",null);
             content.maskLayer = this._createMaskLayer();
             var mZindex =    Number(content.maskLayer.style.zIndex);
@@ -712,6 +713,7 @@ var DialogComponent = ComponeBase.extend({
 
             content.dialog.style.display = "block"; // show
             content.dialog.style.position = "absolute";
+
 
             var dWidth = content.dialog.offsetWidth > this.dev.getWidth() ? this.dev.getWidth() :
                             content.dialog.offsetWidth;
@@ -729,7 +731,7 @@ var DialogComponent = ComponeBase.extend({
             content.dialog.style.height = dHeight + "px";
 
             this.nowDisplayDailog = content.dialog;
-
+            Reitsuki._dispatchEvent(this.content.dialog,"dailogShow",this.name); //send dialog show message
             this.dev.getContent().appendChild(content.maskLayer);
         }
 
@@ -744,6 +746,9 @@ var DialogComponent = ComponeBase.extend({
     reset:function(){
         if(this.content.maskLayer !== undefined){
             this.content.maskLayer.parentNode.removeChild(this.content.maskLayer);
+            if(this.content.dailog.style.display !== "none"){
+                Reitsuki._dispatchEvent(this.content.dialog,"dailogClose",this.name); //send dialog close message
+            }
             this.content.dialog.style.display = "none";
             this.messageCenter.broadcast("SHOWSCRIPTBOX",null);
             this.zIndex -= 2;
@@ -2161,6 +2166,23 @@ var VideoComponent = ComponeBase.extend({
         subClass.superClass = baseClass.prototype;
     };
 
+    Reitsuki._dispatchEvent = function(ele,eventType,data){
+        if(ele.dispatchEvent){
+            var ev = document.createEvent("HTMLEvents");
+            ev.initEvent(eventType,false,false);
+            ev.data = data;
+            ele.dispatchEvent(ev);
+            return true;
+        } else if(ele.fireEvent){
+            //IE
+            var e = document.createEventObject();
+            e.data = data;
+            ele.fireEvent(eventType, e);
+            return true;
+        }
+        return false;
+    };
+
     Reitsuki._trim = function(text){return text.replace(/^\s+|\s+$/g, '');};
 
 
@@ -2198,6 +2220,8 @@ var VideoComponent = ComponeBase.extend({
     Reitsuki.localStorage.remove = function(key){
         window.localStorage.removeItem( Reitsuki.localStorage.prefix + key );
     };
+
+
 })(Reitsuki);
 
 /**
@@ -2444,7 +2468,7 @@ Reitsuki.ScriptExecutor.prototype._procCHImageAndVoice = function(text){
         }else{
             chNams.push(chImageSetting[i]);
         }
-        reg.compile(reg);
+        reg.lastIndex = 0;
     }
 
     text = chNams.join(',') + "：" + text.substr(colonIndex+1);

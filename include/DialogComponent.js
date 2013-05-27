@@ -29,6 +29,7 @@ var DialogComponent = ComponeBase.extend({
 
             content.init = true;
             content.dialog = document.getElementById(id);
+
             this.messageCenter.broadcast("HIDESCRIPTBOX",null);
             content.maskLayer = this._createMaskLayer();
             var mZindex =    Number(content.maskLayer.style.zIndex);
@@ -36,6 +37,7 @@ var DialogComponent = ComponeBase.extend({
 
             content.dialog.style.display = "block"; // show
             content.dialog.style.position = "absolute";
+
 
             var dWidth = content.dialog.offsetWidth > this.dev.getWidth() ? this.dev.getWidth() :
                             content.dialog.offsetWidth;
@@ -53,7 +55,7 @@ var DialogComponent = ComponeBase.extend({
             content.dialog.style.height = dHeight + "px";
 
             this.nowDisplayDailog = content.dialog;
-
+            Reitsuki._dispatchEvent(this.content.dialog,"dailogShow",this.name); //send dialog show message
             this.dev.getContent().appendChild(content.maskLayer);
         }
 
@@ -68,6 +70,9 @@ var DialogComponent = ComponeBase.extend({
     reset:function(){
         if(this.content.maskLayer !== undefined){
             this.content.maskLayer.parentNode.removeChild(this.content.maskLayer);
+            if(this.content.dailog.style.display !== "none"){
+                Reitsuki._dispatchEvent(this.content.dialog,"dailogClose",this.name); //send dialog close message
+            }
             this.content.dialog.style.display = "none";
             this.messageCenter.broadcast("SHOWSCRIPTBOX",null);
             this.zIndex -= 2;
