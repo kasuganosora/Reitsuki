@@ -93,16 +93,16 @@ gal.start();
 
 > @clearCH null
 
-## 设置标签(label命令)
+## 设置标签(@label命令)
 标签命令为
 > @label "标签名"
 
 其中标签名必须在冒号里面, @label后面必须要有一个空格,因为这是Reitsuki调用函数的格式
 
-## 跳转命令(goto命令)
+## 跳转命令(@goto命令)
 > @goto "标签名"
 
-## if命令 
+## @if命令 
 > @if a > b,"label2"
 
 其中 a > b为javascript的逻辑语句, 这里的意思为如果 a > b 的话那么就跳转到label2哪里
@@ -140,14 +140,14 @@ gal.start();
 
 就是$号后面跟着在global里的成员名
 
-## 设置背景(setBG命令)
+## 设置背景(@setBG命令)
 > @setBG "bg1",1000
 
 背景文件夹为bg,文件格式为jpg.
 上面的意思为 显示bg1.jpg为背景,且渐变速度为1000毫秒
 其中渐变速度为可选
 
-## 以纯色作为背景(setBGColor命令)
+## 以纯色作为背景(@setBGColor命令)
 > @setBGColor "#000",1000
 
 "#000" 为颜色编码
@@ -161,12 +161,13 @@ chrome,firefox,opera 是使用ogg文件格式,IE和Safari是使用mp3文件格�
 > @setVoice "v01"
 > @setSound "sound"
 
-## 播放视频 (@video)
+## 播放视频 (@video命令)
 > @video "mp4.m4v","video.webm","video.ogg"
 
-## 选择语句(selectBox命令)
+## 选择语句(@selectBox命令)
 > @selectBox "item1","如果Item1被选择的话就跳去这个label","item2","如果Item2被选择的话就跳去这个label"
 
+  
 #环境设置命令 (@set)
 例如设置 脚本显示框的背景
 > @set "sb_BackgroundImage","image","img/scrpitboxbk.jpg",0.7
@@ -199,15 +200,21 @@ chrome,firefox,opera 是使用ogg文件格式,IE和Safari是使用mp3文件格�
 想要设置其他组件的话 必须带上完整名字例如想设置BGComponent的A属性
 > @set "BG_A" 1
 
-## 显示对话框(dailog)
-@dailog "titleDailog",callback
+## 显示对话框(@dailog)
+> @dailog "titleDailog",callback
+
 意思是显示html element id为titleDailog 的div,在这个dailog关闭的时候调用callback里的函数
 对话框必须关闭后才会继续执行下一句语句
+
 在对话框关闭后必须执行closeDialog方法通知Reitsuki 这个对话框已经关闭了并返回了一些东西
 另外callback参数不是必须的
 
+当对话框显示时,会触发 "dailogShow" 事件
+
+当对话框关闭时,会触发 "dailogClose" 事件
+
 对话框关闭事件例子
-     document.getElementById("start_game").addEventListener("click",function(){
+>  document.getElementById("start_game").addEventListener("click",function(){
              gal.closeDialog("startGame");
          },false);
 
