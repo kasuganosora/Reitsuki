@@ -1,2 +1,4 @@
 
 *.xml
+
+.DS_Store
