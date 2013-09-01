@@ -1,2 +1,12 @@
-
+game_script
+game_script/*
+css/*
+config/*
+bg/*
+bgm/*
+video/*
+img/*
 *.xml
+
+.DS_Store
+character/*
